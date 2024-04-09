@@ -530,7 +530,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileBean> implement
         //     queryWrapper.eq(FileBean::getFileName, pathName);
         // }
 
-        String folderPath = path.substring(0, path.lastIndexOf("/"));
+        String folderPath = StringUtil.isEmpty(path.substring(0, path.lastIndexOf("/"))) ? "/" :  path.substring(0, path.lastIndexOf("/"));
         String folderName = path.substring(path.lastIndexOf("/") + 1);
         queryWrapper.eq(FileBean::getFilePath, folderPath);
         queryWrapper.eq(FileBean::getFileName, folderName);
