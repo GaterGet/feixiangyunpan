@@ -10,7 +10,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.util.Units;
 import org.apache.poi.xssf.usermodel.*;
-import sun.misc.BASE64Decoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.Map;
-
+import java.util.Base64;
 /**
  * @author leaving
  * @date 2022/4/5 11:55
@@ -234,15 +233,16 @@ public class ExcelUtils {
             response.setHeader("Content-Disposition", disposition);
             // response.setContentType("application/force-download");// 设置强制下载不打开
             //修改模板内容导出新模板
-            File file = new File("D:\\ideaWorkspace\\pan\\static\\file\\tmp\\导出.xlsx");
+            // File file = new File("D:\\ideaWorkspace\\pan\\static\\file\\tmp\\导出.xlsx");
+            File file = new File("/Users/leaving/data/pan/static/file/tmp/导出.xlsx");
             OutputStream out = new FileOutputStream(file);
             // out = response.getOutputStream();
 
-            // FileOutputStream fileOutputStream = new FileOutputStream(file);
-            // wb.write(fileOutputStream); //将工作簿写到输出流中
-            // fileOutputStream.flush();
-            // fileOutputStream.close();
-            // wb.close();
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            wb.write(fileOutputStream); //将工作簿写到输出流中
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            wb.close();
 
             out.flush();
             wb.write(out);
@@ -531,16 +531,11 @@ public class ExcelUtils {
                 // anchor.setAnchorType(ClientAnchor.AnchorType.byId(Integer.parseInt(iamgeData.get("type").toString
                 // ())));
                 anchor.setAnchorType(Integer.parseInt(iamgeData.get("type").toString()));
-                BASE64Decoder decoder = new BASE64Decoder();
                 byte[] decoderBytes = new byte[0];
                 boolean flag = true;
-                try {
-                    if (iamgeData.get("src") != null) {
-                        decoderBytes = decoder.decodeBuffer(iamgeData.get("src").toString().split(";base64,")[1]);
-                        flag = iamgeData.get("src").toString().split(";base64,")[0].contains("png");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (iamgeData.get("src") != null) {
+                    decoderBytes = Base64.getDecoder().decode(iamgeData.get("src").toString().split(";base64,")[1]);
+                    flag = iamgeData.get("src").toString().split(";base64,")[0].contains("png");
                 }
                 if (flag) {
                     patriarch.createPicture(anchor, wb.addPicture(decoderBytes, HSSFWorkbook.PICTURE_TYPE_PNG));

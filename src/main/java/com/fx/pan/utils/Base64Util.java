@@ -1,13 +1,9 @@
 package com.fx.pan.utils;
 
-import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 
 /**
@@ -38,8 +34,7 @@ public class Base64Util {
      */
     public static String decodeBase64(String str) {
         byte[] decoded = Base64.getDecoder().decode(str);
-        String decodeStr = new String(decoded);
-        return decodeStr;
+        return new String(decoded);
     }
 
     /**
@@ -55,7 +50,7 @@ public class Base64Util {
         byte[] buffer = new byte[(int) file.length()];
         inputFile.read(buffer);
         inputFile.close();
-        return new BASE64Encoder().encode(buffer);
+        return Arrays.toString(Base64.getEncoder().encode(buffer));
     }
 
     /**
@@ -68,10 +63,10 @@ public class Base64Util {
     public static void decoderBase64File(String base64Code, String targetPath, String catalogue)
             throws Exception {
         File file = new File(catalogue);
-        if (file.exists() == false) {
+        if (!file.exists()) {
             file.mkdirs();
         }
-        byte[] buffer = new BASE64Decoder().decodeBuffer(base64Code);
+        byte[] buffer = Base64.getDecoder().decode(base64Code);
         FileOutputStream out = new FileOutputStream(targetPath);
         out.write(buffer);
         out.close();
