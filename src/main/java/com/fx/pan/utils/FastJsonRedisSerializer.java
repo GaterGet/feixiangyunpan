@@ -1,7 +1,6 @@
 package com.fx.pan.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -26,7 +25,8 @@ public class FastJsonRedisSerializer<T> implements RedisSerializer<T>
 
     static
     {
-        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
+        //        // version@1.2.78 升级到 version@2.0.9 需要注释
+        // ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
     }
 
     public FastJsonRedisSerializer(Class<T> clazz)
