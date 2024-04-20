@@ -1,10 +1,7 @@
 package com.fx.pan.controller;
 
-
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fx.pan.domain.*;
 import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.common.Constants;
@@ -21,11 +18,9 @@ import com.fx.pan.vo.UserVo;
 import com.fx.pan.vo.share.ShareFileListVO;
 import com.fx.pan.vo.share.ShareFileSaveDTO;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -69,7 +64,8 @@ public class ShareController {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         FileBean shareFile = fileService.selectFileById(shareSecretDTO.getFileId());
         Share share = new Share();
-        Date shareTime = DateUtil.getFormatCurrentTime("yyyy-MM-dd HH:mm:ss");
+        Date shareTime = new Date();
+
         share.setShareTime(shareTime);
         share.setUpdateTime(shareTime);
         share.setUserId(userId);

@@ -1,7 +1,7 @@
 package com.fx.pan.factory.operation.download;
 
 import com.fx.pan.factory.operation.download.domain.DownloadFile;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 
 /**

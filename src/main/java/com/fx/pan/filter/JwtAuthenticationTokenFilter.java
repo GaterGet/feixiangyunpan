@@ -2,13 +2,16 @@ package com.fx.pan.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.fx.pan.domain.LoginUser;
-import com.fx.pan.service.TokenService;
 import com.fx.pan.utils.JwtUtil;
 import com.fx.pan.utils.RedisCache;
 import com.fx.pan.utils.SessionUtil;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -16,11 +19,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.annotation.Resource;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -36,9 +34,6 @@ import static com.fx.pan.common.Constants.REDIS_LOGIN_USER_PREFIX;
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Resource
     private RedisCache redisCache;
-
-    @Resource
-    private TokenService tokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -69,7 +64,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // token 不为空，解析 token
         Long uesrId;
         try {
-
             Claims claims = JwtUtil.parseJWT(userToken);
             LoginUser user = JSON.parseObject(claims.getSubject(), LoginUser.class);
             uesrId = user.getUserId();

@@ -71,7 +71,7 @@ public class ShareManageServiceImpl extends ServiceImpl<ShareMapper, Share> impl
     @Override
     public Integer shareListTotal() {
         LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
-        return shareMapper.selectCount(wrapper);
+        return Math.toIntExact(shareMapper.selectCount(wrapper));
     }
 
     @Override

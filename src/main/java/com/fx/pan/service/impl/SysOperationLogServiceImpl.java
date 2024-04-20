@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -39,8 +40,18 @@ public class SysOperationLogServiceImpl implements SysOperationLogService {
     }
 
     @Override
+    public Optional<SysOperationLog> getOneOpt(Wrapper<SysOperationLog> queryWrapper) {
+        return SysOperationLogService.super.getOneOpt(queryWrapper);
+    }
+
+    @Override
     public SysOperationLog getOne(Wrapper<SysOperationLog> queryWrapper, boolean throwEx) {
         return null;
+    }
+
+    @Override
+    public Optional<SysOperationLog> getOneOpt(Wrapper<SysOperationLog> queryWrapper, boolean throwEx) {
+        return Optional.empty();
     }
 
     @Override

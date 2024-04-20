@@ -4,7 +4,7 @@ import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.domain.User;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.List;
 

@@ -29,11 +29,11 @@ public class DateUtil {
      * @param format
      * @return Date
      */
-    public static Date getFormatCurrentTime(String format){
+    public static String getFormatCurrentTime(String format){
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        String format1 = simpleDateFormat.format(date);
-        return date;
+        String dateTime = simpleDateFormat.format(date);
+        return dateTime;
     }
 
     public static String formatDate(Date date, String format) {
@@ -55,14 +55,12 @@ public class DateUtil {
         if (newDate == null || newDate.equals("")) {
             newDate = getCurrentTime();
         }
-        Date currdate = format.parse(newDate);
-        System.out.println("现在的日期是：" + currdate);
+        Date currdate;
         Calendar ca = Calendar.getInstance();
         ca.add(Calendar.DATE, num);// num为增加的天数，可以改变的
         currdate = ca.getTime();
         String enddate = format.format(currdate);
-        System.out.println("增加天数以后的日期：" + enddate);
-        Date date = null;
+        Date date;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         date = formatter.parse(enddate);
         return date;

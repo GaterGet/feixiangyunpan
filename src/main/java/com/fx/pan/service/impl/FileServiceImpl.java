@@ -51,7 +51,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileBean> implement
     public boolean createFolder(FileBean createFile) {
         createFile.setAudit(1);
         return fileMapper.insert(createFile) > 0;
-        // return fileMapper.insertFile(createFile)>0;
     }
 
     @Override
@@ -135,7 +134,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileBean> implement
     @Override
     public boolean insertFileInfo(FileBean fileBean) {
         return fileMapper.insert(fileBean) > 0;
-        // return fileMapper.insertFile(fileBean) > 0;
     }
 
     @Override
@@ -321,10 +319,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileBean> implement
     public List selectFileByIdentifier(String identifier) {
         LambdaQueryWrapper<FileBean> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(FileBean::getIdentifier, identifier);
-        // queryWrapper.in(FileBean::getDeleted, 0, 1);
         return fileMapper.selectList(queryWrapper);
-        // return fileMapper.selectFileByIdentifier(identifier);
-        // return fileMapper.selectList(queryWrapper);
     }
 
     @Override
@@ -361,7 +356,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileBean> implement
         queryWrapper.eq(FileBean::getUserId, userId);
         queryWrapper.in(isAudit == false, FileBean::getAudit, Arrays.asList(-1, 0));
         queryWrapper.in(isAudit == true, FileBean::getAudit, Arrays.asList(1));
-        return fileMapper.selectCount(queryWrapper);
+        return Math.toIntExact(fileMapper.selectCount(queryWrapper));
     }
 
     @SneakyThrows

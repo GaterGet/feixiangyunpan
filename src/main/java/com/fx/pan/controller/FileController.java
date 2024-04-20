@@ -24,8 +24,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -114,7 +112,7 @@ public class FileController {
      */
     @PostMapping("/rename")
     public ResponseResult rename(@RequestParam Long userId, @RequestParam Long fileId, @RequestParam String fileName,
-                                 @RequestParam("filePath") String filePath,@RequestParam("isDir") Integer isDir) {
+                                 @RequestParam(value = "filePath",required = false) String filePath,@RequestParam("isDir") Integer isDir) {
         FileBean fileBean1 = fileService.selectFileByNameAndPath(fileName, filePath, userId,isDir);
         boolean flag;
         if (fileBean1 != null) {
@@ -344,7 +342,7 @@ public class FileController {
         map.put("total", fileList.size());
         return ResponseResult.success("获取成功",map);
     }
-    
+
     @GetMapping("/list/offline")
     public ResponseResult fileListOfOffline(){
         Long userId = SecurityUtils.getUserId();

@@ -8,23 +8,17 @@ package com.fx.pan.utils;
 
 import com.fx.pan.common.Constants;
 import com.fx.pan.domain.FileBean;
-import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.service.FileService;
-import com.qcloud.cos.COSClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 实现离线下载
@@ -232,7 +226,7 @@ public class OfflineDownloadUtil {
             e.printStackTrace();
         }
         Date date = new Date();
-        Date formatCurrentTime = DateUtil.getFormatCurrentTime("yyyy-MM-dd");
+        Date formatCurrentTime = new Date();
         String fileUrl = "/" + formatCurrentTime.toString() + "/" + finalFileName;
         File file = new File(savePath + finalFileName);
         file.renameTo(new File(savePath + finalFileName + "_" + (index + 1)));

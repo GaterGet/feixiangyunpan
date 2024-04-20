@@ -8,14 +8,13 @@ import com.fx.pan.factory.upload.product.CosMultipartFile;
 import com.fx.pan.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -74,7 +73,7 @@ public abstract class Uploader {
         List<UploadFileResult> uploadFileResultList = new ArrayList<>();
         StandardMultipartHttpServletRequest request = (StandardMultipartHttpServletRequest) httpServletRequest;
 
-        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+        boolean isMultipart = httpServletRequest instanceof MultipartHttpServletRequest;
         if (!isMultipart) {
             throw new UploadException("未包含文件上传域");
         }

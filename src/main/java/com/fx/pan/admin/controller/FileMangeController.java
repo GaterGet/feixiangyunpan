@@ -1,19 +1,15 @@
 package com.fx.pan.admin.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.fx.pan.domain.ResponseResult;
-import com.fx.pan.domain.FileBean;
-import com.fx.pan.domain.User;
 import com.fx.pan.admin.service.FileManageService;
+import com.fx.pan.domain.FileBean;
+import com.fx.pan.domain.ResponseResult;
+import com.fx.pan.domain.User;
 import com.fx.pan.service.CosFileService;
-import com.fx.pan.service.FileService;
 import com.fx.pan.service.UserService;
 import com.fx.pan.utils.BeanCopyUtils;
 import com.fx.pan.vo.FileListVo;
 import com.fx.pan.vo.UserVo;
 import com.qcloud.cos.model.ciModel.auditing.ImageAuditingResponse;
-import org.checkerframework.checker.initialization.qual.FBCBottom;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -32,9 +28,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/manage/file")
 public class FileMangeController {
-
-    @Resource
-    private FileService fileService;
 
     @Resource
     private UserService userService;

@@ -5,10 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fx.pan.admin.service.FileManageService;
 import com.fx.pan.domain.FileBean;
 import com.fx.pan.mapper.FileMapper;
-import com.fx.pan.admin.service.FileManageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -52,7 +51,7 @@ public class FileManageServiceImpl extends ServiceImpl<FileMapper, FileBean> imp
         queryWrapper.eq(path != null, FileBean::getFilePath, path);
         queryWrapper.eq(uid != null, FileBean::getUserId, uid);
         queryWrapper.eq(onlyFile == true, FileBean::getIsDir, 0);
-        return fileMapper.selectCount(queryWrapper);
+        return Math.toIntExact(fileMapper.selectCount(queryWrapper));
     }
 
     @Override
@@ -68,7 +67,7 @@ public class FileManageServiceImpl extends ServiceImpl<FileMapper, FileBean> imp
     public Integer searchTotal(String keyword) {
         LambdaQueryWrapper<FileBean> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.like(keyword != null, FileBean::getFileName, keyword);
-        return fileMapper.selectCount(queryWrapper);
+        return Math.toIntExact(fileMapper.selectCount(queryWrapper));
     }
 
     @Override
@@ -105,7 +104,7 @@ public class FileManageServiceImpl extends ServiceImpl<FileMapper, FileBean> imp
     public Integer fileListByTypeTotal(Integer fileType) {
         LambdaQueryWrapper<FileBean> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(fileType != null, FileBean::getFileType, fileType);
-        return fileMapper.selectCount(queryWrapper);
+        return Math.toIntExact(fileMapper.selectCount(queryWrapper));
     }
 
     @Override

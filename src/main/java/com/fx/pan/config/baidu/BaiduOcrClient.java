@@ -1,9 +1,6 @@
 package com.fx.pan.config.baidu;
 
 import com.baidu.aip.ocr.AipOcr;
-import com.fx.pan.config.cos.CosProperties;
-import jdk.nashorn.internal.ir.annotations.Reference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

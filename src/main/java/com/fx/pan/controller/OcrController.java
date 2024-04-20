@@ -1,22 +1,20 @@
 package com.fx.pan.controller;
 
 import com.fx.pan.annotation.Limit;
-import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.domain.FileBean;
+import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.service.BaiduOcrService;
 import com.fx.pan.service.FileService;
 import com.fx.pan.utils.FileUtils;
 import com.fx.pan.utils.ImageUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 /**

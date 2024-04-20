@@ -12,9 +12,11 @@ import com.fx.pan.service.FileService;
 import com.fx.pan.service.FileTransferService;
 import com.fx.pan.service.StorageService;
 import com.fx.pan.utils.*;
-import com.fx.pan.utils.file.convert.FormatConversion;
 import com.fx.pan.vo.file.UploadFileVo;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -390,7 +389,7 @@ public class FileTransferController {
         filePath = FxUtils.getStaticPath() + "\\" + date + "\\" + id + "." + extensionName;
         File file1 = new File(filePath);
         if (!file1.exists()) {
-            throw new RuntimeException("文件预览失败");
+            throw new RuntimeException("文件预览失败, 文件不存在");
         }
         File file = new File(filePath);
         FileInputStream inputStream = null;
@@ -501,14 +500,14 @@ public class FileTransferController {
                 0);
         if (Arrays.asList(doc).contains(fileExt)) {
             if ("pdf".equals(convertExt)) {
-                FormatConversion.doc2pdf(orginFilePath, convertFilePath,fileBean,userId,type,t);
+                // FormatConversion.doc2pdf(orginFilePath, convertFilePath,fileBean,userId,type,t);
                 return ResponseResult.success("Word文档转PDF文件任务创建成功！");
             }
         } else if (Arrays.asList(xls).contains(fileExt)) {
-            FormatConversion.excel2pdf(orginFilePath, convertFilePath);
+            // FormatConversion.excel2pdf(orginFilePath, convertFilePath);
             return ResponseResult.success("xls文件转PDF文件任务创建成功！");
         } else if ("pdf".equals(fileExt)) {
-            FormatConversion.pdf2Doc(orginFilePath, convertFilePath,fileBean,userId,type,t);
+            // FormatConversion.pdf2Doc(orginFilePath, convertFilePath,fileBean,userId,type,t);
             return ResponseResult.success("PDF文件转Word文档任务创建成功！");
         }
         if (flag) {

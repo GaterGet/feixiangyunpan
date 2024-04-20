@@ -14,12 +14,12 @@ import com.fx.pan.service.CosFileService;
 import com.fx.pan.service.FileService;
 import com.fx.pan.service.FileTransferService;
 import com.fx.pan.service.StorageService;
-import com.fx.pan.utils.DateUtil;
-import com.fx.pan.utils.FileUtils;
-import com.fx.pan.utils.RedisCache;
-import com.fx.pan.utils.SecurityUtils;
+import com.fx.pan.utils.*;
+import com.fx.pan.utils.file.FileTypeUtils;
+import com.fx.pan.utils.file.ImageUtil;
 import com.fx.pan.vo.file.UploadFileVo;
 import com.qcloud.cos.model.ciModel.auditing.ImageAuditingResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,12 +53,15 @@ public class FileTransferServiceImpl extends ServiceImpl<FileMapper, FileBean> i
     @Value("${fx.absoluteFilePath}")
     String absolutePath;
 
+    @Value("${fx.absoluteFilePath}")
+    String absoluteFilePath;
+
     @Value("${fx.fileAudit}")
     String fileAudit;
 
     @Resource
     private FileService fileService;
-    
+
     @Resource
     private CosFileService cosFileService;
 
@@ -79,10 +81,6 @@ public class FileTransferServiceImpl extends ServiceImpl<FileMapper, FileBean> i
 
     @Autowired
     private RedisCache redisCache;
-
-
-
-
 
     /**
      * 极速上传
@@ -230,7 +228,7 @@ public class FileTransferServiceImpl extends ServiceImpl<FileMapper, FileBean> i
         }
         if (chunk.getChunkNumber().equals(chunk.getTotalChunks())) {
             response.setStatus(200);
-            FileBean fileBean = FileUtils.getUploadFileBean(chunk, date, storageType, userId);
+            FileBean fileBean = this.getUploadFileBean(chunk, date, storageType, userId);
             if (fileAudit.equals("1")) {
                 if (fileBean.getFileType() == 1) {
                     ImageAuditingResponse res = cosFileService.fileAudit(fileBean,false);
@@ -256,5 +254,98 @@ public class FileTransferServiceImpl extends ServiceImpl<FileMapper, FileBean> i
             return ResponseResult.success("ok");
         }
     }
+
+    /**
+     * 返回上传文件对象
+     *
+     * @param chunk
+     * @param userId
+     * @return
+     */
+    public FileBean getUploadFileBean(Chunk chunk, Date date, Integer storageType, Long userId) throws IOException {
+        FileBean f = new FileBean();
+        String fileName = chunk.getFilename();
+        f.setFileName(fileName);
+        // if (chunk.getRelativePath().contains("/")) {
+        //     if (!chunk.getRelativePath().equals("/")) {
+        //         filePathResolve(chunk.getRelativePath(),chunk.getFilePath(),userId);
+        //         f.setFilePath("/"+chunk.getRelativePath().replace("/"+fileName, ""));
+        //     } else {
+        //         f.setFilePath(chunk.getFilePath());
+        //     }
+        // } else {
+        //     f.setFilePath(chunk.getFilePath());
+        // }
+        filePathResolve(chunk.getRelativePath(),chunk.getFilePath(),userId);
+        if (chunk.getRelativePath().contains("/")) {
+            f.setFilePath(chunk.getFilePath() + "/" +  chunk.getRelativePath().replace("/" + fileName, ""));
+        } else {
+            f.setFilePath(chunk.getFilePath());
+        }
+
+        f.setIsDir(0);
+        f.setFileSize(chunk.getTotalSize());
+        String extendName = FileUtils.getFileExt(fileName);
+        f.setFileExt(extendName);
+        f.setIdentifier(chunk.getIdentifier());
+        f.setStorageType(storageType);
+        Integer fileType = FileTypeUtils.getFileTypeByExtendName(FileUtils.getFileExt(fileName));
+        f.setFileCreateTime(date);
+        f.setFileUpdateTime(date);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        String formatDate = simpleDateFormat.format(date);
+
+        f.setFileUrl(formatDate + "/" + chunk.getIdentifier() + "." + extendName);
+
+        // 生成缩略图     || fileType == 2
+        if (fileType == 1) {
+            f.setAudit(0);
+            ImageUtil.startGenerateThumbnail(absoluteFilePath + "/" + formatDate + "/" + chunk.getIdentifier() + "." + extendName, f, true, 0.3);
+        }
+        if (fileType == 2) {
+            f.setAudit(0);
+        }
+        f.setAudit(1);
+
+        f.setFileType(fileType);
+        f.setUserId(userId);
+        return f;
+    }
+
+    public String filePathResolve(String relativePath,String filePath,Long userId) {
+        String path1 = "上传文件夹/上传内1/上传1内index.js";
+        // 获取relativePath中"/"的个数
+        int pathNum = StringUtil.appearNumber(relativePath, "/");
+        String[] pathArray = relativePath.split("/");
+
+        for (int i = 0; i < pathNum; i++) {
+            String path = filePath.equals("/") ? "/" : filePath + FileUtils.getPath(pathArray, i);
+            String pathName = pathArray[i];
+            boolean folderExist = fileService.isFolderExist(path, pathName, userId);
+            System.out.println("检测目录是否存在====path:" + path + " pathName:" + pathName + " folderExist:" + folderExist);
+            if (!folderExist) {
+                FileBean folder = new FileBean();
+                folder.setFileName(pathName);
+                folder.setIsDir(1);
+                folder.setFilePath(path);
+                folder.setFileCreateTime(new Date());
+                folder.setFileUpdateTime(new Date());
+                folder.setUserId(userId);
+                if (folder.getFilePath().equals("/")) {
+                    folder.setParentPathId(-1L);
+                } else {
+                    System.out.println("获取父目录id====path:" + folder.getFilePath()+ "          pathName:" + pathName);
+                    // FileBean fileBean = fileService.selectParentPath(path, pathName,userId);
+                    // folder.setParentPathId(fileBean.getId());
+                }
+
+                fileService.createFolder(folder);
+            }
+        }
+
+        return "";
+    }
+
+
 
 }

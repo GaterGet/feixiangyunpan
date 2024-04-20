@@ -5,11 +5,11 @@ import com.fx.pan.domain.WsResultBean;
 import com.fx.pan.utils.StringUtil;
 import com.fx.pan.utils.office.MyStringUtil;
 import com.fx.pan.utils.office.Pako_GzipUtils;
+import jakarta.websocket.*;
+import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Objects;

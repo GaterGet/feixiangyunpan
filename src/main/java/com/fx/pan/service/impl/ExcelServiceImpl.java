@@ -7,8 +7,6 @@ import com.fx.pan.domain.ExcelBean;
 import com.fx.pan.domain.FileBean;
 import com.fx.pan.mapper.ExcelMapper;
 import com.fx.pan.service.ExcelService;
-import javafx.scene.control.Label;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,7 +24,7 @@ public class ExcelServiceImpl extends ServiceImpl<ExcelMapper, ExcelBean> implem
     private ExcelMapper excelMapper;
 
     @Override
-    public ExcelBean selectByFileId(Long id) {
+    public ExcelBean    selectByFileId(Long id) {
         LambdaQueryWrapper<ExcelBean> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(ExcelBean::getFileId, id);
         return excelMapper.selectOne(queryWrapper);

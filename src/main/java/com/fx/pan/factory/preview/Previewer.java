@@ -9,7 +9,7 @@ import com.fx.pan.utils.FileUtils;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 
 /**

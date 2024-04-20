@@ -2,27 +2,29 @@ package com.fx.pan.controller;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
-import cn.hutool.captcha.LineCaptcha;
-import cn.hutool.jwt.JWTUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fx.pan.domain.*;
-import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.common.Constants;
-import com.fx.pan.dto.user.LoginUserBody;
+import com.fx.pan.domain.LoginUser;
+import com.fx.pan.domain.ResponseResult;
+import com.fx.pan.domain.Storage;
+import com.fx.pan.domain.User;
 import com.fx.pan.service.StorageService;
 import com.fx.pan.service.UserService;
-import com.fx.pan.utils.BeanCopyUtils;
 import com.fx.pan.utils.JwtUtil;
 import com.fx.pan.utils.RedisCache;
 import com.fx.pan.utils.SecurityUtils;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.security.core.Authentication;
@@ -33,12 +35,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -76,13 +72,16 @@ public class UserController {
 
 
     /**
-     * @param user
+     * @param userName
+     * @param password
      * @return
      */
     @ApiOperation(value = "用户注册")
     @PostMapping("/register")
-    public ResponseResult register(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public ResponseResult register(@RequestParam("userName")String userName, @RequestParam("password") String password) {
+        User user = new User();
+        user.setUserName(password);
+        user.setPassword(passwordEncoder.encode(password));
         return userService.register(user);
     }
 
@@ -90,35 +89,38 @@ public class UserController {
     /**
      * 登录
      *
-     * @param loginUserBody
+     * @param userName
+     * @param password
      * @return
      */
     @ApiOperation(value = "用户登录")
     @PostMapping("/login")
-    public ResponseResult login(@RequestBody LoginUserBody loginUserBody) {
+    public ResponseResult login(@RequestParam("userName")String userName, @RequestParam("password") String password) {
         if (enableCaptcha.equals("1")) {
-            String captcha = loginUserBody.getCaptcha();
-            String t = loginUserBody.getTs();
-            Object cacheObject = redisCache.getCacheObject(Constants.REDIS_DATA_SUFFIX + "-captcha:" + t);
-            if (cacheObject == null) {
-                return ResponseResult.error(500, "验证码已过期，请重新获取");
-            } else {
-                if (!captcha.equalsIgnoreCase(cacheObject.toString())) {
-                    return ResponseResult.error(500, "验证码错误");
-                } else {
-                    redisCache.deleteObject(Constants.REDIS_DATA_SUFFIX + "-captcha:" + t);
-                    User user = new User();
-                    user.setUserName(loginUserBody.getUserName());
-                    user.setPassword(loginUserBody.getPassword());
-                    // user.setPassword(passwordEncoder.encode(loginUserBody.getPassword()));
-                    System.out.println("登录user:" + user);
-                    return userService.login(user.getUserName(), user.getPassword());
-                }
-            }
+            // String captcha = loginUserBody.getCaptcha();
+            // String t = loginUserBody.getTs();
+            // Object cacheObject = redisCache.getCacheObject(Constants.REDIS_DATA_SUFFIX + "-captcha:" + t);
+            // if (cacheObject == null) {
+            //     return ResponseResult.error(500, "验证码已过期，请重新获取");
+            // } else {
+                // if (!captcha.equalsIgnoreCase(cacheObject.toString())) {
+                //     return ResponseResult.error(500, "验证码错误");
+                // } else {
+                //     redisCache.deleteObject(Constants.REDIS_DATA_SUFFIX + "-captcha:" + t);
+                //     User user = new User();
+                //     user.setUserName(userName);
+                //     user.setPassword(password);
+                //     // user.setPassword(passwordEncoder.encode(loginUserBody.getPassword()));
+                //     System.out.println("登录user:" + user);
+                //     return userService.login(user.getUserName(), user.getPassword());
+                // }
+
+                return userService.login(userName, password);
+            // }
         } else {
             User user = new User();
-            user.setUserName(loginUserBody.getUserName());
-            user.setPassword(loginUserBody.getPassword());
+            user.setUserName(userName);
+            user.setPassword(password);
             // user.setPassword(passwordEncoder.encode(loginUserBody.getPassword()));
             return userService.login(user.getUserName(), user.getPassword());
         }
@@ -178,7 +180,6 @@ public class UserController {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("token")) {
                     String token = cookie.getValue();
-                    System.out.println("用户获取用户信息token:" + token);
                     if (StringUtils.isEmpty(token)) {
                         return ResponseResult.error(401, "用户未登录");
                     } else {

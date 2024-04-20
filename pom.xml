@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
+        <version>3.2.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.fx</groupId>
@@ -14,7 +14,7 @@
     <name>pan</name>
     <description>pan</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
 
         <!--依赖输出目录-->
         <output.dependence.file.path>lib/</output.dependence.file.path>
@@ -30,6 +30,12 @@
         </repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version> <!-- 根据实际需要选择最新稳定版本 -->
+            <scope>provided</scope> <!-- 对于部署到支持Servlet的容器中，通常设为provided -->
+        </dependency>
         <!--spring-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -50,7 +56,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>33.0.0-jre</version>
         </dependency>
         <!--redis-->
         <dependency>
@@ -69,6 +75,25 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-core</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-api</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!--druid数据源-->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -77,8 +102,8 @@
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.3</version>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.5</version>
         </dependency>
 
         <!--腾讯cos-->
@@ -98,19 +123,24 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.27</version>
         </dependency>
 
         <!--MariaDB数据库-->
+        <!--<dependency>-->
+        <!--    <groupId>org.mariadb.jdbc</groupId>-->
+        <!--    <artifactId>mariadb-java-client</artifactId>-->
+        <!--    <version>2.1.2</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>2.1.2</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
         <!--fastjson-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.78</version>
+            <version>2.0.9.graal</version>
         </dependency>
         <!--excel-->
         <!--<dependency>-->
@@ -175,28 +205,28 @@
         </dependency>
         <!--文件格式转换-->
         <!--word转PDF-->
-        <dependency>
-            <groupId>com.aspose</groupId>
-            <artifactId>aspose-words</artifactId>
-            <version>15.8.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aspose</groupId>
-            <artifactId>aspose-cells</artifactId>
-            <version>8.5.2</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>com.aspose</groupId>-->
+        <!--    <artifactId>aspose-words</artifactId>-->
+        <!--    <version>15.8.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    <groupId>com.aspose</groupId>-->
+        <!--    <artifactId>aspose-cells</artifactId>-->
+        <!--    <version>8.5.2</version>-->
+        <!--</dependency>-->
         <!--PDF转word-->
-        <dependency>
-            <groupId>e-iceblue</groupId>
-            <artifactId>spire.pdf</artifactId>
-            <version>3.4.2</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>e-iceblue</groupId>-->
+        <!--    <artifactId>spire.pdf</artifactId>-->
+        <!--    <version>3.4.2</version>-->
+        <!--</dependency>-->
         <!--excel转换-->
-        <dependency>
-            <groupId>e-iceblue</groupId>
-            <artifactId>spire.xls.free</artifactId>
-            <version>3.9.1</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>e-iceblue</groupId>-->
+        <!--    <artifactId>spire.xls.free</artifactId>-->
+        <!--    <version>3.9.1</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.mybatis.generator</groupId>

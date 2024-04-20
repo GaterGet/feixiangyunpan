@@ -1,15 +1,10 @@
 package com.fx.pan.service;
 
-import com.fx.pan.domain.FileBean;
-import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.domain.Chunk;
-import com.fx.pan.dto.file.DownloadFileDTO;
-import com.fx.pan.dto.file.PreviewDTO;
+import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.dto.file.UploadFileDTO;
 import com.fx.pan.vo.file.UploadFileVo;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author leaving

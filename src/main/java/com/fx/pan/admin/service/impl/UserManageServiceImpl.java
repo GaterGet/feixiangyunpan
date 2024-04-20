@@ -5,11 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fx.pan.admin.service.UserManageService;
-import com.fx.pan.domain.Share;
 import com.fx.pan.domain.User;
-import com.fx.pan.mapper.ShareMapper;
 import com.fx.pan.mapper.UserMapper;
-import lombok.experimental.PackagePrivate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -39,7 +36,7 @@ public class UserManageServiceImpl  extends ServiceImpl<UserMapper, User> implem
     public Integer selectUsersTotal(String query) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(query != null, User::getUserName, query);
-        return userMapper.selectCount(wrapper);
+        return Math.toIntExact(userMapper.selectCount(wrapper));
     }
 
     @Override

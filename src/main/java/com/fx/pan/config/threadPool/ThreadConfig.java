@@ -31,9 +31,9 @@ public class ThreadConfig implements AsyncConfigurer {
         // return executor;
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         //线程池维护线程的最少数量
-        executor.setCorePoolSize(10);
+        executor.setCorePoolSize(3);
         //线程池维护线程的最大数量
-        executor.setMaxPoolSize(20);
+        executor.setMaxPoolSize(10);
         executor.setQueueCapacity(200);
         //允许的空闲时间
         executor.setKeepAliveSeconds(60);
