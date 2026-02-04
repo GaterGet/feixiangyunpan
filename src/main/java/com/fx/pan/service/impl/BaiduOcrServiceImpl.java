@@ -1,6 +1,6 @@
 package com.fx.pan.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.json.JSONUtil;
 import com.baidu.aip.ocr.AipOcr;
 import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.service.BaiduOcrService;
@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class BaiduOcrServiceImpl implements BaiduOcrService {
         // basicGeneral(bytesFile, options);
         String fmd = Md5Utils.md5HashCode32(new ByteArrayInputStream(readImageFile));
         Map map = new HashMap();
-        map.put("result", JSON.parse(res.toString(2)));
+        map.put("result", JSONUtil.parse(res.toString(2)));
         return ResponseResult.success(map);
         // .put("client", client.toString().substring(25, 33)).put("log_id", fmd);
     }

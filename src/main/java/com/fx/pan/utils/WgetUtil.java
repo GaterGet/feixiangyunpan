@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class WgetUtil {
         this.wgetDir = wgetDir;
     }
 
-    @Autowired
+    @Resource
     private FileService fs;
 
     private static FileService fileService;

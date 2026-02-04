@@ -1,6 +1,6 @@
 package com.fx.pan.controller;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fx.pan.domain.ExcelBean;
 import com.fx.pan.domain.FileBean;
@@ -13,6 +13,8 @@ import com.fx.pan.utils.SecurityUtils;
 import com.fx.pan.utils.office.ExcelUtils;
 import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.xssf.usermodel.*;
@@ -25,8 +27,6 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.Date;
@@ -264,7 +264,7 @@ public class OfficeController {
 
     @PostMapping("/excel/export")
     public ResponseResult downExcelFile(@RequestParam(value = "excelData") String excelData, @RequestParam Long id,
-                                        HttpServletRequest request, HttpServletResponse response) {
+                                        HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long userId = SecurityUtils.getUserId();
         FileBean fileBean = fileService.selectFileById(id);
         excelData = excelData.replace("&#xA;", "\\r\\n");//去除luckysheet中 &#xA 的换行
@@ -308,16 +308,14 @@ public class OfficeController {
 
         if (excelBean == null) {
             FileBean fileBean = fileService.selectFileById(id);
-            String filePath = com.fx.pan.factory.FxUtils.getStaticPath() + "/" + fileBean.getFileUrl();
             Map map = new HashMap();
             map.put("file", fileBean);
             return ResponseResult.success("获取成功",map);
-            // put("data", Base64Util.encodeBase64File(filePath)).put("type", "file")
         } else {
             Object parse = null;
             if (excelBean.getData() != null) {
                 String excelData = excelBean.getData().replace("\\", "");
-                parse = JSON.parse(excelData);
+                parse = JSONUtil.parse(excelData);
             }
             excelBean.setData("");
             Map map = new HashMap();

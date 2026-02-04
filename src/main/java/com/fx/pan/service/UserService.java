@@ -2,9 +2,9 @@ package com.fx.pan.service;
 
 import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.domain.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.List;
 
@@ -25,8 +25,6 @@ public interface UserService{
     User seletUserWithUserName(String username);
 
     ResponseResult updateUser(User user);
-
-    User getUserBeanByToken(String token);
 
     User selectUserById(Serializable id);
 

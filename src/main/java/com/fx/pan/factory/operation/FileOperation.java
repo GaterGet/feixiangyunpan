@@ -6,7 +6,7 @@ package com.fx.pan.factory.operation;
  * @version 1.0
  */
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -226,7 +226,7 @@ public class FileOperation {
             try {
                 ZipFile tempZipFile = new ZipFile(sourceFile);
                 entries = tempZipFile.entries();
-                log.info(JSON.toJSONString(entries));
+                log.info(JSONUtil.toJsonStr(entries));
                 zipFile = new ZipFile(sourceFile);
                 entries = zipFile.entries();
             } catch (IOException e) {

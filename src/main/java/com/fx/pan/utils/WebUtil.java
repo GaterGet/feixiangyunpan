@@ -1,6 +1,6 @@
 package com.fx.pan.utils;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONUtil;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -92,7 +92,7 @@ public class WebUtil extends WebUtils {
             Throwable var4 = null;
 
             try {
-                out.append(JSONObject.toJSONString(result));
+                out.append(JSONUtil.toJsonStr(result));
             } catch (Throwable var14) {
                 var4 = var14;
                 throw var14;

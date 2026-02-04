@@ -3,11 +3,12 @@ spring:
   active:
     profile: dev
   datasource:
-#    driver-class-name: org.mariadb.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     username: root
     password: 123456
     url: jdbc:mariadb://localhost:3309/fxyp?characterEncoding=utf-8&useSSL=false&useTimezone=true&serverTimezone=GMT%2B8
+    url: jdbc:postgresql://localhost:5432/fxyp?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
     druid:
       #2.连接池配置
       #初始化连接池的连接数量 大小，最小，最大
@@ -20,7 +21,7 @@ spring:
       time-between-eviction-runs-millis: 60000
       # 配置一个连接在池中最小生存的时间，单位是毫秒
       min-evictable-idle-time-millis: 30000
-      validation-query: SELECT 1 FROM DUAL
+      validation-query: SELECT 1
       test-while-idle: true
       test-on-borrow: true
       test-on-return: false
@@ -49,6 +50,9 @@ spring:
         login-password: admin
         allow: 127.0.0.1
         #deny: 192.168.1.100
+#  data:
+#    mongodb:
+#      uri: mongodb://localhost:27017/fxyp
   servlet:
     multipart:
       enabled: true
@@ -57,26 +61,23 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-
-
-# MyBatis配置
-#mybatis:
-#  # 搜索指定包别名
-#  typeAliasesPackage: com.fx.pan.domain
-#  # 配置mapper的扫描，找到所有的mapper.xml映射文件
-#  mapperLocations: classpath*:mapper/**/*Mapper.xml
-#  # 加载全局的配置文件
-#  configLocation: classpath:mybatis/mybatis-config.xml
+#    serialization:
+#      write-dates-as-timestamps: false
 
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # PostgreSQL适配：字段名使用双引号包围
+    map-underscore-to-camel-case: true
   global-config:
     db-config:
+      # PostgreSQL适配：表名和字段名使用双引号
+      table-prefix: ""
+      column-format: "\"%s\""
+      table-format: "\"%s\""
       logic-delete-field: deleted # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
-
 
 # PageHelper分页插件
 pagehelper:
@@ -84,7 +85,7 @@ pagehelper:
   #配置时，可以使用下面的缩写值：　
   #oracle,mysql,mariadb,sqlite,hsqldb,postgresql,db2,sqlserver,informix,h2,sqlserver2012,derby
   #特别注意：使用 SqlServer2012 数据库时，需要手动指定为sqlserver2012，否则会使用 SqlServer2005 的方式进行分页。
-  helper-dialect: mariadb
+  helper-dialect: postgresql
   #分页合理化参数，默认值为false。
   #当该参数设置为true时，pageNum<=0时会查询第一页，pageNum>pages（超过总数时），会查询最后一页。默认false时，直接根据参数进行查询。
   reasonable: true

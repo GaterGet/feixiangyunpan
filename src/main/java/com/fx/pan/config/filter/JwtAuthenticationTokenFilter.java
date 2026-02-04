@@ -1,6 +1,6 @@
-package com.fx.pan.filter;
+package com.fx.pan.config.filter;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.json.JSONUtil;
 import com.fx.pan.domain.LoginUser;
 import com.fx.pan.utils.JwtUtil;
 import com.fx.pan.utils.RedisCache;
@@ -65,7 +65,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         Long uesrId;
         try {
             Claims claims = JwtUtil.parseJWT(userToken);
-            LoginUser user = JSON.parseObject(claims.getSubject(), LoginUser.class);
+            LoginUser user = JSONUtil.toBean(claims.getSubject(), LoginUser.class, true);
             uesrId = user.getUserId();
             SessionUtil.setSession(user);
         } catch (Exception e) {

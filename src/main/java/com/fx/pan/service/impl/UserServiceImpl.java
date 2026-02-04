@@ -1,7 +1,6 @@
 package com.fx.pan.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,11 +19,9 @@ import com.fx.pan.utils.FileTypeUtils;
 import com.fx.pan.utils.JwtUtil;
 import com.fx.pan.utils.Md5Utils;
 import com.fx.pan.utils.RedisCache;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,11 +127,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         //如果认证通过
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        System.out.println("loginUser=========" + loginUser);
         String userId = loginUser.getUser().getId().toString();
         User saveUserBean = findUserInfoByUserName(loginUser.getUsername());
         loginUser.setUserId(saveUserBean.getId());
-        String jwt = JwtUtil.createJWT(JSONObject.toJSONString(loginUser));
+        String jwt = JwtUtil.createJWT(JSONUtil.toJsonStr(loginUser));
         redisCache.set(Constants.REDIS_LOGIN_USER_PREFIX + userId,loginUser,JwtUtil.EXPIRE_TIME);
         User user = loginUser.getUser();
         if (user.getStatus() == 1) {
@@ -203,51 +199,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     }
 
-    @Override
-    public User getUserBeanByToken(String token) {
-        Claims c = null;
-        if (StringUtils.isEmpty(token)) {
-            return null;
-        }
-        //        if (!token.startsWith("Bearer ")) {
-//            throw new NotLoginException("token格式错误");
-//        }
-        token = token.replace("Bearer ", "");
-        try {
-            c = JwtUtil.parseJWT(token);
-        } catch (Exception e) {
-            log.info("解码异常:" + e);
-            return null;
-        }
-        if (c == null) {
-            log.info("解码为空");
-            return null;
-        }
-        String subject = c.getSubject();
-        log.debug("解析结果：" + subject);
-        User tokenUser = JSON.parseObject(subject, User.class);
-
-        User saveUser = new User();
-        String tokenPassword = "";
-        String savePassword = "";
-        if (StringUtils.isNotEmpty(tokenUser.getPassword())) {
-            saveUser = seletUserWithUserName(tokenUser.getUserName());
-            if (saveUser == null) {
-                return null;
-            }
-            tokenPassword = tokenUser.getPassword();
-            savePassword = saveUser.getPassword();
-        }
-        if (StringUtils.isEmpty(tokenPassword) || StringUtils.isEmpty(savePassword)) {
-            return null;
-        }
-        if (tokenPassword.equals(savePassword)) {
-
-            return saveUser;
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public User selectUserById(Serializable id) {

@@ -1,6 +1,6 @@
 package com.fx.pan.config;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.json.JSONUtil;
 import com.fx.pan.domain.WsResultBean;
 import com.fx.pan.utils.StringUtil;
 import com.fx.pan.utils.office.MyStringUtil;
@@ -158,7 +158,7 @@ public class EditWebSocketServer {
     private void sendMessage(WsResultBean wsResultBean, Session toSession) {
         try {
             log.info("服务端给客户端[{}]发送消息", toSession.getId());
-            toSession.getBasicRemote().sendText(JSON.toJSONString(wsResultBean));
+            toSession.getBasicRemote().sendText(JSONUtil.toJsonStr(wsResultBean));
         } catch (Exception e) {
             log.error("服务端发送消息给客户端失败：{}", e);
         }

@@ -1,6 +1,5 @@
 package com.fx.pan.admin.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fx.pan.admin.service.UserManageService;
 import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.domain.User;

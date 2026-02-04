@@ -1,16 +1,15 @@
 package com.fx.pan.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -37,7 +36,7 @@ public class User implements Serializable {
     //用户名
     private String userName;
     //密码
-    @JSONField(serialize = false)
+    @JsonIgnore
     private String password;
     //昵称
     private String nickName;
@@ -56,6 +55,7 @@ public class User implements Serializable {
     //角色 (1管理员2普通用户)
     private Integer role;
     //账号状态（ 0正常1停用）
+    @JsonIgnore
     private Integer status;
 
     private Integer deleted;

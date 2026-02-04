@@ -1,6 +1,6 @@
 package com.fx.pan.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.fx.pan.config.cos.CosProperties;
 import com.fx.pan.domain.FileBean;
 import com.fx.pan.domain.ResponseResult;
@@ -106,7 +106,7 @@ public class CosFileServiceImpl implements CosFileService {
         request.setObjectKey(filepath);
         //3.调用接口,获取任务响应对象
         ImageAuditingResponse response = cosClient.imageAuditing(request);
-        String s = JSONObject.toJSONString(response);
+        String s = JSONUtil.toJsonStr(response);
         System.out.println("文件审核返回结果====" + s);
         return response;
         // {jobId='si07bda9bbceca11eca0e55254009a49da', object='null', compressionResult='0', result='0',

@@ -1,16 +1,14 @@
 package com.fx.pan.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import lombok.Data;
-import lombok.Getter;
 
 /**
  * 文件分享表
@@ -40,7 +38,7 @@ public class Share implements Serializable {
     /**
      * 文件提取码
      */
-    @JSONField(serialize = false)
+    @JsonIgnore
     private String extractionCode;
 
     /**

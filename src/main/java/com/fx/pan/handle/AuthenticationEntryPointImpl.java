@@ -1,9 +1,12 @@
 package com.fx.pan.handle;
 
-import com.alibaba.fastjson.JSON;
-import com.fx.pan.domain.ResponseResult;
+import cn.hutool.json.JSONUtil;
 import com.fx.pan.common.AppHttpCodeEnum;
+import com.fx.pan.domain.ResponseResult;
 import com.fx.pan.utils.WebUtil;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -11,9 +14,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -36,6 +36,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             msg = ResponseResult.error(AppHttpCodeEnum.SYSTEM_ERROR.getCode(), "认证或授权失败");
         }
         // 响应给前端
-        WebUtil.renderString(response, JSON.toJSONString(msg));
+        WebUtil.renderString(response, JSONUtil.toJsonStr(msg));
     }
 }

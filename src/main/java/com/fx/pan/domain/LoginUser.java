@@ -1,6 +1,6 @@
 package com.fx.pan.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,7 +86,7 @@ public class LoginUser implements UserDetails {
     private User user;
 
 
-    @JSONField(serialize = false)
+    @JsonIgnore
     private List<SimpleGrantedAuthority> authorities;
 
     public LoginUser(Long userId, User user) {
@@ -115,8 +116,8 @@ public class LoginUser implements UserDetails {
         if (authorities!=null){
             return authorities;
         }
-        authorities =
-                permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        authorities = permissions != null ?
+                permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()) : new ArrayList<>();
         return authorities;
 
     }

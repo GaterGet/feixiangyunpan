@@ -6,12 +6,15 @@ package com.fx.pan.advice;
  * @date 2022/5/12 8:51
  */
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.fx.pan.domain.LoginUser;
 import com.fx.pan.domain.SysOperationLog;
 import com.fx.pan.mapper.SysOperationLogMapper;
 import com.fx.pan.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -27,9 +30,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -147,7 +147,7 @@ public class ApiOperationAspectService {
         //将参数转换成json
         if (argumentObj != null) {
             try {
-                params = JSONObject.toJSONString(argumentObj);
+                params = JSONUtil.toJsonStr(argumentObj);
             } catch (Exception e) {
                 if(assignConvertJsonException){
                     params = "入参转换至JSON异常:"+e.toString();

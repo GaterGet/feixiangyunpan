@@ -1,6 +1,6 @@
 package com.fx.pan.config;
 
-import com.fx.pan.filter.JwtAuthenticationTokenFilter;
+import com.fx.pan.config.filter.JwtAuthenticationTokenFilter;
 import com.fx.pan.handle.AccessDeniedHandlerImpl;
 import com.fx.pan.handle.AuthenticationEntryPointImpl;
 import com.fx.pan.handle.LogoutSuccessHandlerImpl;

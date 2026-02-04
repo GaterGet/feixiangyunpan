@@ -119,12 +119,19 @@
             <artifactId>pagehelper-spring-boot-starter</artifactId>
             <version>1.4.2</version>
         </dependency>
-        <!--MySQL数据库-->
+        <!--PostgreSQL数据库-->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.27</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.1</version>
         </dependency>
+        
+        <!--MySQL数据库 (保留注释，如需回滚可取消注释)-->
+        <!--<dependency>-->
+        <!--    <groupId>mysql</groupId>-->
+        <!--    <artifactId>mysql-connector-java</artifactId>-->
+        <!--    <version>8.0.27</version>-->
+        <!--</dependency>-->
 
         <!--MariaDB数据库-->
         <!--<dependency>-->
@@ -140,7 +147,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>2.0.9.graal</version>
+            <version>1.2.80</version>
         </dependency>
         <!--excel-->
         <!--<dependency>-->
@@ -169,6 +176,21 @@
             <version>3.15</version>
         </dependency>
 
+        <!--rapid ocr-->
+        <!--  rapidocr这个必须要引入     -->
+        <!--  可前往maven中央仓库https://central.sonatype.com/artifact/io.github.mymonstercat/rapidocr/versions，查看版本      -->
+        <dependency>
+            <groupId>io.github.mymonstercat</groupId>
+            <artifactId>rapidocr</artifactId>
+            <version>0.0.7</version>
+        </dependency>
+        <!--  一般只需要引入一个，CPU端建议使用onnx，移动端建议使用ncnn     -->
+        <!--  可前往maven中央仓库https://central.sonatype.com/artifact/io.github.mymonstercat/rapidocr-onnx-platform/versions，查看版本      -->
+        <dependency>
+            <groupId>io.github.mymonstercat</groupId>
+            <artifactId>rapidocr-onnx-platform</artifactId>
+            <version>0.0.7</version>
+        </dependency>
         <!--Apache PDF转word-->
         <!--<dependency>-->
         <!--    <groupId>commons-logging</groupId>-->
@@ -195,7 +217,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.7.19</version>
+            <version>5.8.25</version>
         </dependency>
         <!--百度文字识别-->
         <dependency>
@@ -255,7 +277,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.14</version>
+            <version>1.21</version>
         </dependency>
         <!--mybatisplus生成器-->
         <dependency>
@@ -414,20 +436,20 @@
             </plugin>
             <!-- 该插件的作用是用于复制依赖的jar包到指定的文件夹里 -->
             <!--<plugin>-->
-            <!--    <groupId>org.apache.maven.plugins</groupId>-->
-            <!--    <artifactId>maven-dependency-plugin</artifactId>-->
-            <!--    <executions>-->
-            <!--        <execution>-->
-            <!--            <id>copy-dependencies</id>-->
-            <!--            <phase>package</phase>-->
-            <!--            <goals>-->
-            <!--                <goal>copy-dependencies</goal>-->
-            <!--            </goals>-->
-            <!--            <configuration>-->
-            <!--                <outputDirectory>${project.build.directory}/lib/</outputDirectory>-->
-            <!--            </configuration>-->
-            <!--        </execution>-->
-            <!--    </executions>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                <!--<executions>-->
+                <!--    <execution>-->
+                <!--        <id>copy-dependencies</id>-->
+                <!--        <phase>package</phase>-->
+                <!--        <goals>-->
+                <!--            <goal>copy-dependencies</goal>-->
+                <!--        </goals>-->
+                <!--        <configuration>-->
+                <!--            <outputDirectory>${project.build.directory}/lib/</outputDirectory>-->
+                <!--        </configuration>-->
+                <!--    </execution>-->
+                <!--</executions>-->
             <!--</plugin>-->
 
             <!-- 该插件的作用是用于复制指定的文件 -->

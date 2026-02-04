@@ -2,8 +2,7 @@ package com.fx.pan.controller;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fx.pan.common.Constants;
 import com.fx.pan.domain.LoginUser;
@@ -94,7 +93,7 @@ public class UserController {
      * @return
      */
     @ApiOperation(value = "用户登录")
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseResult login(@RequestParam("userName")String userName, @RequestParam("password") String password) {
         if (enableCaptcha.equals("1")) {
             // String captcha = loginUserBody.getCaptcha();
@@ -184,7 +183,7 @@ public class UserController {
                         return ResponseResult.error(401, "用户未登录");
                     } else {
                         Claims claims = JwtUtil.parseJWT(token);
-                        LoginUser user = JSON.parseObject(claims.getSubject(), LoginUser.class);
+                        LoginUser user = JSONUtil.toBean(claims.getSubject(), LoginUser.class, true);
                         userId = user.getUserId();
                     }
                 }
@@ -193,7 +192,7 @@ public class UserController {
 
 
         User user = userService.selectUserById(userId);
-        map.put("userInfo", JSONObject.toJSON(user));
+        map.put("userInfo", user);
         return ResponseResult.success("获取成功", map);
     }
 

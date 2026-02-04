@@ -2,27 +2,27 @@ package com.fx.pan.utils.office;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.microsoft.schemas.office.visio.x2012.main.CellType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.DVConstraint;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.util.Units;
 import org.apache.poi.xssf.usermodel.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.Map;
-import java.util.Base64;
 /**
  * @author leaving
  * @date 2022/4/5 11:55
@@ -30,29 +30,15 @@ import java.util.Base64;
  */
 
 public class ExcelUtils {
-    public static CellStyle createCellStyle(XSSFSheet sheet, XSSFWorkbook wb, JSONObject jsonObjectValue) {
+    public static CellStyle createCellStyle(XSSFSheet sheet, XSSFWorkbook wb, ObjectNode jsonObjectValue) throws IOException {
         XSSFCellStyle cellStyle = wb.createCellStyle();
-        Map<Integer, String> fontMap = new HashMap<>();
-        fontMap.put(-1, "Arial");
-        fontMap.put(0, "Times New Roman");
-        fontMap.put(1, "Arial");
-        fontMap.put(2, "Tahoma");
-        fontMap.put(3, "Verdana");
-        fontMap.put(4, "微软雅黑");
-        fontMap.put(5, "宋体");
-        fontMap.put(6, "黑体");
-        fontMap.put(7, "楷体");
-        fontMap.put(8, "仿宋");
-        fontMap.put(9, "新宋体");
-        fontMap.put(10, "华文新魏");
-        fontMap.put(11, "华文行楷");
-        fontMap.put(12, "华文隶书");
+        Map<Integer, String> fontMap = getFontMap();
         //合并单元格
-        if (jsonObjectValue.get("mc") != null && ((JSONObject) jsonObjectValue.get("mc")).get("rs") != null && ((JSONObject) jsonObjectValue.get("mc")).get("cs") != null) {
-            int r = Integer.parseInt(((JSONObject) jsonObjectValue.get("mc")).get("r").toString());//主单元格的行号,开始行号
-            int rs = Integer.parseInt(((JSONObject) jsonObjectValue.get("mc")).get("rs").toString());//合并单元格占的行数,合并多少行
-            int c = Integer.parseInt(((JSONObject) jsonObjectValue.get("mc")).get("c").toString());//主单元格的列号,开始列号
-            int cs = Integer.parseInt(((JSONObject) jsonObjectValue.get("mc")).get("cs").toString());//合并单元格占的列数,合并多少列
+        if (jsonObjectValue.get("mc") != null && ((ObjectNode) jsonObjectValue.get("mc")).get("rs") != null && ((ObjectNode) jsonObjectValue.get("mc")).get("cs") != null) {
+            int r = Integer.parseInt(((ObjectNode) jsonObjectValue.get("mc")).get("r").toString());//主单元格的行号,开始行号
+            int rs = Integer.parseInt(((ObjectNode) jsonObjectValue.get("mc")).get("rs").toString());//合并单元格占的行数,合并多少行
+            int c = Integer.parseInt(((ObjectNode) jsonObjectValue.get("mc")).get("c").toString());//主单元格的列号,开始列号
+            int cs = Integer.parseInt(((ObjectNode) jsonObjectValue.get("mc")).get("cs").toString());//合并单元格占的列数,合并多少列
             CellRangeAddress region = new CellRangeAddress(r, r + rs - 1, c, c + cs - 1);
             sheet.addMergedRegion(region);
         }
@@ -60,7 +46,7 @@ public class ExcelUtils {
         //字体
         if (jsonObjectValue.get("ff") != null) {
             if (jsonObjectValue.get("ff").toString().matches("^(-?\\d+)(\\.\\d+)?$")) {
-                font.setFontName(fontMap.get(jsonObjectValue.getInteger("ff")));
+                font.setFontName(fontMap.get(jsonObjectValue.get("ff").traverse().getIntValue()));
             } else {
                 font.setFontName(jsonObjectValue.get("ff").toString());
             }
@@ -73,7 +59,7 @@ public class ExcelUtils {
         }
         //粗体
         if (jsonObjectValue.get("bl") != null) {
-            font.setBold(jsonObjectValue.getBoolean("bl"));
+            font.setBold(jsonObjectValue.get("bl").traverse().getBooleanValue());
             // font.setBoldweight("1".equals(jsonObjectValue.get("bl").toString()) ? (short) HSSFFont.BOLDWEIGHT_BOLD
             // : (short)HSSFFont.BOLDWEIGHT_NORMAL);
         }
@@ -92,12 +78,12 @@ public class ExcelUtils {
         }
         //字体大小
         if (jsonObjectValue.get("fs") != null) {
-            font.setFontHeightInPoints(new Short(jsonObjectValue.get("fs").toString()));
+            font.setFontHeightInPoints(Short.valueOf(jsonObjectValue.get("fs").toString()));
         }
         cellStyle.setFont(font);
         //水平对齐
         if (jsonObjectValue.get("ht") != null) {
-            switch (jsonObjectValue.getInteger("ht")) {
+            switch (jsonObjectValue.get("ht").traverse().getIntValue()) {
                 case 0:
                     // cellStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
                     cellStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -112,7 +98,7 @@ public class ExcelUtils {
         }
         //垂直对齐
         if (jsonObjectValue.get("vt") != null) {
-            switch (jsonObjectValue.getInteger("vt")) {
+            switch (jsonObjectValue.get("vt").traverse().getIntValue()) {
                 case 0:
                     cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                     break;
@@ -132,6 +118,25 @@ public class ExcelUtils {
         }
         cellStyle.setWrapText(true);
         return cellStyle;
+    }
+
+    private static Map<Integer, String> getFontMap() {
+        Map<Integer, String> fontMap = new HashMap<>();
+        fontMap.put(-1, "Arial");
+        fontMap.put(0, "Times New Roman");
+        fontMap.put(1, "Arial");
+        fontMap.put(2, "Tahoma");
+        fontMap.put(3, "Verdana");
+        fontMap.put(4, "微软雅黑");
+        fontMap.put(5, "宋体");
+        fontMap.put(6, "黑体");
+        fontMap.put(7, "楷体");
+        fontMap.put(8, "仿宋");
+        fontMap.put(9, "新宋体");
+        fontMap.put(10, "华文新魏");
+        fontMap.put(11, "华文行楷");
+        fontMap.put(12, "华文隶书");
+        return fontMap;
     }
 
     /**
@@ -174,7 +179,7 @@ public class ExcelUtils {
      * @throws IOException
      */
     public static void exportLuckySheetXlsx(String excelData, HttpServletRequest request,
-                                            HttpServletResponse response) {
+                                            HttpServletResponse response) throws IOException {
         //解析对象，可以参照官方文档:https://mengshukeji.github.io/LuckysheetDocs/zh/guide/#%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84
         JSONArray jsonArray = (JSONArray) JSONObject.parse(excelData);
         //如果只有一个sheet那就是get(0),有多个那就对应取下标
@@ -272,13 +277,13 @@ public class ExcelUtils {
      * @param columnlenObject
      * @param rowlenObject
      */
-    public static Map<String, Integer> getColRowMap(JSONObject imageDefault, short defaultRowHeight,
+    public static Map<String, Integer> getColRowMap(ObjectNode imageDefault, short defaultRowHeight,
                                                     short defaultColWidth, JSONObject columnlenObject,
-                                                    JSONObject rowlenObject) {
-        int left = (int) imageDefault.get("left");
-        int top = (int) imageDefault.get("top");
-        int width = (int) imageDefault.get("width");
-        int height = (int) imageDefault.get("height");
+                                                    JSONObject rowlenObject) throws IOException {
+        int left =  imageDefault.get("left").traverse().getIntValue();
+        int top = imageDefault.get("top").traverse().getIntValue();
+        int width = imageDefault.get("width").traverse().getIntValue();
+        int height = imageDefault.get("height").traverse().getIntValue();
         //算起始最大列
         int colMax1 = (int) Math.ceil((double) left / defaultColWidth);
         //算起始最大行
@@ -510,7 +515,7 @@ public class ExcelUtils {
      * @param defaultColWidth
      */
     private static void setImages(XSSFWorkbook wb, XSSFSheet sheet, JSONObject images, JSONObject columnlenObject,
-                                  JSONObject rowlenObject, short defaultRowHeight, short defaultColWidth) {
+                                  JSONObject rowlenObject, short defaultRowHeight, short defaultColWidth) throws IOException {
         //图片插入
         if (images != null) {
             Map<String, Object> map = images.getInnerMap();
@@ -521,7 +526,7 @@ public class ExcelUtils {
                 //图片信息
                 JSONObject iamgeData = (JSONObject) entry.getValue();
                 //图片的位置宽 高 距离左 距离右
-                JSONObject imageDefault = ((JSONObject) iamgeData.get("default"));
+                ObjectNode imageDefault = ((ObjectNode) iamgeData.get("default"));
                 //算坐标
                 Map<String, Integer> colrowMap = getColRowMap(imageDefault, defaultRowHeight, defaultColWidth,
                         finalColumnlenObject, finalRowlenObject);
@@ -559,11 +564,11 @@ public class ExcelUtils {
      */
     private static void setCellValue(XSSFWorkbook wb, XSSFSheet sheet, JSONArray jsonObjectList,
                                      JSONObject columnlenObject, JSONObject rowlenObject, short defaultRowHeight,
-                                     short defaultColWidth) {
+                                     short defaultColWidth) throws IOException {
         for (int index = 0; index < jsonObjectList.size(); index++) {
             JSONObject object = jsonObjectList.getJSONObject(index);
-            JSONObject jsonObjectValue = ((JSONObject) object.get("v"));
-            System.out.println(jsonObjectValue.toJSONString());
+            ObjectNode jsonObjectValue = ((ObjectNode) object.get("v"));
+            // System.out.println(jsonObjectValue.toJSONString());
             String value = "";
             String m = "";
             if (jsonObjectValue != null && jsonObjectValue.get("m") != null && jsonObjectValue.get("v") != null) {
@@ -587,8 +592,8 @@ public class ExcelUtils {
             Boolean isDate = false;
             SimpleDateFormat sdf = null;
             if (jsonObjectValue.get("ct") != null) {
-                cellStyle.setDataFormat(df.getFormat(((JSONObject) jsonObjectValue.get("ct")).getString("fa")));
-                String t = ((JSONObject) jsonObjectValue.get("ct")).getString("t");
+                cellStyle.setDataFormat(df.getFormat(((ObjectNode) jsonObjectValue.get("ct")).get("fa").traverse().toString()));
+                String t =  jsonObjectValue.get("ct").get("t").traverse().toString();
                 if ("n".equals(t)) {
                     isNumber = true;
                 }
@@ -605,7 +610,7 @@ public class ExcelUtils {
                 cell.setCellType(XSSFCell.CELL_TYPE_NUMERIC);
                 cell.setCellValue(m);
             } else if (isDate) {
-                String fa = ((JSONObject) jsonObjectValue.get("ct")).getString("fa");
+                String fa = jsonObjectValue.get("ct").get("fa").traverse().toString();
                 if (fa.contains("AM/PM")) {
                     sdf = new SimpleDateFormat(fa.replaceAll("AM/PM", "aa"), Locale.ENGLISH);
                 } else {
@@ -638,7 +643,7 @@ public class ExcelUtils {
                 XSSFDrawing p = sheet.createDrawingPatriarch();
                 //后四个坐标待定
                 //前四个参数是坐标点,后四个参数是编辑和显示批注时的大小.
-                JSONObject ps = (JSONObject) jsonObjectValue.get("ps");
+                ObjectNode ps = (ObjectNode) jsonObjectValue.get("ps");
                 Map<String, Integer> colrowMapPS = getColRowMap(ps, defaultRowHeight, defaultColWidth,
                         columnlenObject, rowlenObject);
                 XSSFClientAnchor anchor = new XSSFClientAnchor(colrowMapPS.get("dx1"), colrowMapPS.get("dy1"),
@@ -646,9 +651,9 @@ public class ExcelUtils {
                                 "row1"), colrowMapPS.get("col2"), colrowMapPS.get("row2"));
                 XSSFComment comment = p.createCellComment(anchor);
                 // 输入批注信息
-                comment.setString(new XSSFRichTextString(ps.getString("value")));
+                comment.setString(new XSSFRichTextString(ps.get("value").traverse().toString()));
                 // 添加状态
-                comment.setVisible("true".equals(ps.getString("isshow")));
+                comment.setVisible("true".equals(ps.get("isshow").traverse().toString()));
                 // 将批注添加到单元格对象中
                 cell.setCellComment(comment);
             }

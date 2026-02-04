@@ -422,46 +422,98 @@ public class FileTransferController {
     @RequestMapping(value = "/preview/stream", method = RequestMethod.GET)
     public void player(HttpServletRequest request, HttpServletResponse response, Long time, String id, int fileType,
                        String extensionName) {
-        BufferedInputStream bis = null;
         Date d = new Date(time);
         SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
         String date = sf.format(d);
         String path = absoluteFilePath + "/" + date + "/" + id + "." + extensionName;
+        
+        RandomAccessFile randomAccessFile = null;
+        OutputStream outputStream = null;
+        
         try {
             File file = new File(path);
-            if (file.exists()) {
-                long fileLength = file.length();
-                // 随机读文件
-                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-                //获取从那个字节开始读取文件
-                String rangeString = request.getHeader("Range");
-                long range = 0;
-                if (rangeString != null) {
-                    range = Long.valueOf(rangeString.substring(rangeString.indexOf("=") + 1, rangeString.indexOf("-")));
-                }
-                //获取响应的输出流
-                OutputStream outputStream = response.getOutputStream();
-                //设置内容类型
-                response.setContentType("application/octet-stream");
-                //返回码需要为206，代表只处理了部分请求，响应了部分数据
-                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-                // 移动访问指针到指定位置
-                randomAccessFile.seek(range);
-                // 每次请求只返回1MB的视频流
-                byte[] bytes = new byte[1024 * 1024 * 3];
-                int len = randomAccessFile.read(bytes);
-                //设置此次相应返回的数据长度
-                response.setContentLength(len);
-                //设置此次相应返回的数据范围
-                response.setHeader("Content-Range", "bytes " + range + "-" + (fileLength - 1) + "/" + fileLength);
-                // 将这3MB的视频流响应给客户端
-                outputStream.write(bytes, 0, len);
-                outputStream.close();
-                randomAccessFile.close();
+            if (!file.exists()) {
+                log.warn("请求的文件不存在: {}", path);
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
-
+            
+            long fileLength = file.length();
+            randomAccessFile = new RandomAccessFile(file, "r");
+            
+            // 获取从那个字节开始读取文件
+            String rangeString = request.getHeader("Range");
+            long range = 0;
+            if (rangeString != null && rangeString.contains("=") && rangeString.contains("-")) {
+                try {
+                    range = Long.valueOf(rangeString.substring(rangeString.indexOf("=") + 1, rangeString.indexOf("-")));
+                } catch (NumberFormatException e) {
+                    log.warn("无效的Range请求头: {}", rangeString);
+                    range = 0;
+                }
+            }
+            
+            // 检查响应是否已经被提交
+            if (response.isCommitted()) {
+                log.debug("响应已提交，客户端可能已断开连接");
+                return;
+            }
+            
+            // 获取响应的输出流
+            outputStream = response.getOutputStream();
+            
+            // 设置响应头
+            response.setContentType("application/octet-stream");
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+            response.setHeader("Accept-Ranges", "bytes");
+            
+            // 移动访问指针到指定位置
+            randomAccessFile.seek(range);
+            
+            // 每次请求只返回3MB的视频流
+            byte[] bytes = new byte[1024 * 1024 * 3];
+            int len = randomAccessFile.read(bytes);
+            
+            if (len > 0) {
+                // 设置此次响应返回的数据长度和范围
+                response.setContentLength(len);
+                response.setHeader("Content-Range", "bytes " + range + "-" + (range + len - 1) + "/" + fileLength);
+                
+                // 再次检查连接状态
+                if (!response.isCommitted()) {
+                    outputStream.write(bytes, 0, len);
+                    outputStream.flush();
+                }
+            }
+            
+        } catch (org.apache.catalina.connector.ClientAbortException e) {
+            // 客户端主动断开连接，这是正常情况，使用debug级别日志
+            log.debug("客户端断开连接: {}", e.getMessage());
+        } catch (java.io.IOException e) {
+            // 检查是否是Broken pipe异常
+            if (e.getMessage() != null && e.getMessage().contains("Broken pipe")) {
+                log.debug("客户端连接中断 (Broken pipe): {}", e.getMessage());
+            } else {
+                log.error("音视频流传输IO异常: {}", e.getMessage(), e);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("音视频流传输异常: {}", e.getMessage(), e);
+        } finally {
+            // 确保资源正确关闭
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    log.debug("关闭输出流时发生异常: {}", e.getMessage());
+                }
+            }
+            if (randomAccessFile != null) {
+                try {
+                    randomAccessFile.close();
+                } catch (IOException e) {
+                    log.debug("关闭文件访问流时发生异常: {}", e.getMessage());
+                }
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.fx.pan.controller;
 
+import com.benjaminwan.ocrlibrary.OcrResult;
 import com.fx.pan.annotation.Limit;
 import com.fx.pan.domain.FileBean;
 import com.fx.pan.domain.ResponseResult;
@@ -7,6 +8,8 @@ import com.fx.pan.service.BaiduOcrService;
 import com.fx.pan.service.FileService;
 import com.fx.pan.utils.FileUtils;
 import com.fx.pan.utils.ImageUtil;
+import io.github.mymonstercat.Model;
+import io.github.mymonstercat.ocr.InferenceEngine;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author leaving
@@ -41,6 +48,8 @@ public class OcrController {
 
     @Resource
     private FileService fileService;
+
+    private InferenceEngine engine = InferenceEngine.getInstance(Model.ONNX_PPOCR_V3);
 
     /**
      * 图片文字识别 (上传文件识别)
@@ -87,6 +96,12 @@ public class OcrController {
         String date = sf.format(fileBean.getFileCreateTime());
         String imagePath = FileUtils.getLocalStorageFilePathByFileBean(fileBean);
         ResponseResult responseResult = baiduOcrService.baiduGeneralOcr(FileUtils.readImageFile(imagePath), imagePath);
-        return responseResult;
+        OcrResult ocrResult = engine.runOcr(imagePath);
+        System.out.println(ocrResult.getStrRes().trim());
+        Map<String, Object> res = new HashMap<>();
+        List<String> word_result = Arrays.asList(ocrResult.getStrRes().trim().split("\n"));
+        res.put("result", word_result);
+        // return responseResult;
+        return ResponseResult.success(res);
     }
 }

@@ -12,6 +12,10 @@ import com.fx.pan.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -82,13 +86,12 @@ public class NotesController {
      * @return
      */
     @GetMapping("/load")
-    public byte[] load(@RequestParam String id,@RequestParam int version) {
+    public ResponseEntity load(@RequestParam String id,@RequestParam int version) {
         Document document = notesService.loadByFileIdAndVersion(id,version);
         String context = document.getContext();
-        if (context != null) {
-            return context.getBytes();
-        }
-        return new byte[0];
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity<>(context, headers, HttpStatus.OK);
     }
 
     @PostMapping("/modify")

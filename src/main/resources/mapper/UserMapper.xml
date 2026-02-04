@@ -8,18 +8,18 @@
 
     <insert id="insertUser" parameterType="com.fx.pan.domain.User" useGeneratedKeys="true" keyProperty="id">
 
-        insert into user(
-        <if test="id != null">id,</if>
-        <if test="userName != null and userName != ''">user_name,</if>
-        <if test="nickName != null and nickName != ''">nick_name,</if>
-        <if test="email != null and email != ''">email,</if>
-        <if test="avatar != null and avatar != ''">avatar,</if>
-        <if test="phoneNumber != null and phoneNumber != ''">phone_number,</if>
-        <if test="sex != null and sex != ''">sex,</if>
-        <if test="password != null and password != ''">password,</if>
-        <if test="status != null and status != ''">status,</if>
-        <if test="role != null and role != ''">role,</if>
-        create_time,update_time
+        insert into "user"(
+        <if test="id != null">"id",</if>
+        <if test="userName != null and userName != ''">"user_name",</if>
+        <if test="nickName != null and nickName != ''">"nick_name",</if>
+        <if test="email != null and email != ''">"email",</if>
+        <if test="avatar != null and avatar != ''">"avatar",</if>
+        <if test="phoneNumber != null and phoneNumber != ''">"phone_number",</if>
+        <if test="sex != null and sex != ''">"sex",</if>
+        <if test="password != null and password != ''">"password",</if>
+        <if test="status != null and status != ''">"status",</if>
+        <if test="role != null and role != ''">"role",</if>
+        "create_time","update_time"
         )values(
         <if test="id != null and id != ''">#{id},</if>
         <if test="userName != null and userName != ''">#{userName},</if>
@@ -31,26 +31,26 @@
         <if test="password != null and password != ''">#{password},</if>
         <if test="status != null and status != ''">#{status},</if>
         <if test="role != null and role != ''">#{role},</if>
-        sysdate(),sysdate()
+        CURRENT_TIMESTAMP,CURRENT_TIMESTAMP
         )
         </insert>
     <update id="updateUser" parameterType="com.fx.pan.domain.User">
-        update user
+        update "user"
         <set>
-            <if test="userName != null and userName != ''">user_name = #{userName},</if>
-            <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
-            <if test="email != null and email != ''">email = #{email},</if>
-            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
-            <if test="phoneNumber != null and phoneNumber != ''">phone_number = #{phoneNumber},</if>
-            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="userName != null and userName != ''">"user_name" = #{userName},</if>
+            <if test="nickName != null and nickName != ''">"nick_name" = #{nickName},</if>
+            <if test="email != null and email != ''">"email" = #{email},</if>
+            <if test="avatar != null and avatar != ''">"avatar" = #{avatar},</if>
+            <if test="phoneNumber != null and phoneNumber != ''">"phone_number" = #{phoneNumber},</if>
+            <if test="sex != null and sex != ''">"sex" = #{sex},</if>
         </set>
-        where id = #{id}
+        where "id" = #{id}
     </update>
     <select id="checkUserNameUnique" resultType="java.lang.Integer">
-        select count(1) from user where user_name = #{userName} limit 1
+        select count(1) from "user" where "user_name" = #{userName} limit 1
     </select>
     <select id="findUserInfoByUserName" resultType="com.fx.pan.domain.User">
-        select * from user where user_name = #{userName}
+        select * from "user" where "user_name" = #{userName}
     </select>
 
 
