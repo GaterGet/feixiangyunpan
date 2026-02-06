@@ -72,6 +72,6 @@
         from share s
                  inner join
              file f on
-                 s.file_id = f.id limit #{pageNum},#{pageSize}
+                 s.file_id = f.id limit #{pageSize} offset #{pageNum}
     </select>
 </mapper>

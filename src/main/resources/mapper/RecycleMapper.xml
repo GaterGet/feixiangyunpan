@@ -219,7 +219,7 @@
             resultType="com.fx.pan.vo.FileListVo">
         select * from file
         <include refid="selectByExtendName"></include>
-        limit #{beginCount}, #{pageCount}
+        limit #{pageCount} offset #{beginCount}
     </select>
 
     <select id="selectCountByExtendName" parameterType="com.fx.pan.domain.FileBean" resultType="java.lang.Long">
@@ -231,7 +231,7 @@
             resultType="com.fx.pan.vo.FileListVo">
         select * from file
         <include refid="selectByNotExtendName"></include>
-        limit #{beginCount}, #{pageCount}
+        limit #{pageCount} offset #{beginCount}
     </select>
 
     <select id="selectCountNotInExtendNames" parameterType="com.fx.pan.domain.FileBean" resultType="java.lang.Long">
